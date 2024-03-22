@@ -2,8 +2,6 @@
 
 namespace StudioDemmys\CalendarImage;
 
-use Cassandra\Date;
-
 class Calendar
 {
     protected function __construct()
