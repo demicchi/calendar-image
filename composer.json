@@ -1,0 +1,12 @@
+{
+  "require": {
+    "php": ">=8.1",
+    "ext-gd": "*",
+    "ext-intl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "StudioDemmys\\CalendarImage\\": "class/"
+    }
+  }
+}
