@@ -17,6 +17,22 @@ class Config
     // calendar background
     const BACKGROUND_IMAGE = "./image/background.png";
     
+    // Dither
+    const DITHER_PALETTE = [
+        "7color" => [
+            "palette" => [
+                0x0 => [  0,   0,   0], // black
+                0x1 => [255, 255, 255], // white
+                0x2 => [  0, 255,   0], // green
+                0x3 => [  0,   0, 255], // blue
+                0x4 => [255,   0,   0], // red
+                0x5 => [255, 255,   0], // yellow
+                0x6 => [255, 170,   0], // orange
+            ],
+            "amount" => 0.75,
+        ],
+    ];
+    
     // FIRST_WDAY
     // first day of week
     // 0=Sunday, .., 6=Saturday

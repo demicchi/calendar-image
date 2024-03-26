@@ -16,6 +16,7 @@ require_once dirname(__FILE__)."/class/DayType.php";
 require_once dirname(__FILE__)."/class/Holiday.php";
 require_once dirname(__FILE__)."/class/HolidaySubstitution.php";
 require_once dirname(__FILE__)."/class/HolidaysOfTheYear.php";
+require_once dirname(__FILE__)."/lib/gd-indexed-color-converter/GDIndexedColorConverter.php";
 require_once dirname(__FILE__)."/class/Image.php";
 require_once dirname(__FILE__)."/class/Calendar.php";
 
@@ -23,25 +24,42 @@ require_once dirname(__FILE__)."/class/Calendar.php";
 $now = new \DateTimeImmutable("now", new \DateTimeZone(Config::TIMEZONE));
 Logging::debug("now: " . $now->format(\DateTimeInterface::ATOM));
 
-$query = array_key_first($_GET);
+$dither = null;
+$pack_bits = null;
 
-// return remaining seconds to 00:00 tomorrow
-if ($query == "timer") {
-    // echo seconds to next day
-    $timestamp_now = $now->getTimestamp();
-    $timestamp_tomorrow = $now->modify("tomorrow")->getTimestamp();
-    echo $timestamp_tomorrow - $timestamp_now;
-    exit();
+if (isset($_GET["mode"])) {
+    $mode = strtolower($_GET["mode"]);
+    switch ($mode) {
+        case "timer":
+            // echo seconds to 00:00 next day
+            $timestamp_now = $now->getTimestamp();
+            $timestamp_tomorrow = $now->modify("tomorrow")->getTimestamp();
+            echo $timestamp_tomorrow - $timestamp_now;
+            exit();
+            break;
+        case "7color4bit":
+            $dither = "7color";
+            $pack_bits = 4;
+            break;
+        case "7color":
+            $dither = "7color";
+            break;
+    }
 }
 
-// set $now when valid yyyymmdd is passed via GET
-if (preg_match('/^\d{8}$/', $query) === 1) {
-    try {
-        $target_date = new \DateTimeImmutable($query, new \DateTimeZone(Config::TIMEZONE));
-    } catch (\Exception) {
-        $target_date = $now;
+
+
+if (isset($_GET["date"])) {
+    $query_date = strtolower($_GET["date"]);
+    // set $now when valid yyyymmdd is passed via GET
+    if (preg_match('/^\d{8}$/', $query_date) === 1) {
+        try {
+            $target_date = new \DateTimeImmutable($query_date, new \DateTimeZone(Config::TIMEZONE));
+        } catch (\Exception) {
+            $target_date = $now;
+        }
+        $now = $target_date;
     }
-    $now = $target_date;
 }
 
 
@@ -263,11 +281,54 @@ Calendar::renderDaysCalendar(
 
 
 // --------------------------------------------------------------------------------
-// Export png
+// Dither the image
 // --------------------------------------------------------------------------------
 
-header('Content-Type: image/png');
-imagepng($image);
+if (!is_null($dither) && isset(Config::DITHER_PALETTE[$dither]["palette"])) {
+    $converter = new \StudioDemmys\lib\GDIndexedColorConverter\GDIndexedColorConverter();
+    $dithered = $converter->convertToIndexedColor($image, Config::DITHER_PALETTE[$dither]["palette"],
+        Config::DITHER_PALETTE[$dither]["amount"] ?? 0.75, !is_null($pack_bits));
+    if (!is_null($pack_bits)) {
+        imagedestroy($image);
+    }
+    $image = $dithered;
+}
 
-imagedestroy($image);
+
+// --------------------------------------------------------------------------------
+// Export png or the binary
+// --------------------------------------------------------------------------------
+
+if (is_null($pack_bits)) {
+    header('Content-Type: image/png');
+    imagepng($image);
+    imagedestroy($image);
+    exit();
+}
+
+if ($pack_bits == 4) {
+    $output = "";
+    $buf = null;
+    foreach ($image as $yx) {
+        foreach ($yx as $x) {
+            if (is_null($buf)) {
+                $buf = $x;
+            } else {
+                $buf = pack("C", ($buf << 4) | $x);
+                $output .= $buf;
+                $buf = null;
+            }
+        }
+    }
+    if (!is_null($buf)) {
+        $output .= $buf << 4;
+    }
+    header('Content-Type: application/octet-stream');
+    echo $output;
+} else {
+    exit("error");
+}
+
+
+
 
