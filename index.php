@@ -301,8 +301,13 @@ if (!is_null($dither) && isset(Config::DITHER_PALETTE[$dither]["palette"])) {
 
 if (is_null($pack_bits)) {
     header('Content-Type: image/png');
+    ob_start();
     imagepng($image);
+    $output = ob_get_contents();
+    ob_end_clean();
     imagedestroy($image);
+    header('Content-Length:' . strlen($output));
+    echo $output;
     exit();
 }
 
@@ -324,6 +329,7 @@ if ($pack_bits == 4) {
         $output .= $buf << 4;
     }
     header('Content-Type: application/octet-stream');
+    header('Content-Length:' . strlen($output));
     echo $output;
 } else {
     exit("error");
