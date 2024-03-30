@@ -23,4 +23,5 @@ class Common
         $text = preg_replace('/[\p{Cc}\p{Cf}\p{Z}]/u', '', $text);
         return $text;
     }
+    
 }

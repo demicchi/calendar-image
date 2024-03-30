@@ -9,24 +9,26 @@ class HolidaysOfTheYear
      */
     protected array $holidays;
     protected \DateTimeImmutable $this_year;
+    protected string $holiday_name;
     /**
      * @var HolidaySubstitution[] $substitution_overflown
      */
     protected array $substitution_overflown;
     
-    public function __construct(\DateTimeInterface $date, bool $recursive = false)
+    public function __construct(\DateTimeInterface $date, string $holiday_name, bool $recursive = false)
     {
+        $this->holiday_name = $holiday_name;
         $this->this_year = \DateTimeImmutable::createFromInterface($date);
         Logging::debug("this year: " . $this->this_year->format(\DateTimeInterface::ATOM));
         $this->initializeHolidayTable();
         $substitution_needed_list = $this->setHolidayToHolidayTable();
         if ($recursive) {
-            $previous_year = new self($this->this_year->modify("previous year"), false);
+            $previous_year = new self($this->this_year->modify("previous year"), $this->holiday_name, false);
             $substitution_overflown = $previous_year->getSubstituteHolidayOverflow();
             $substitution_needed_list = [...$substitution_needed_list, ...$substitution_overflown];
         }
         $this->setSubstituteHolidayToHolidayTable($substitution_needed_list);
-        if (Config::HOLIDAY_RULE_SANDWICH)
+        if (Config::getConfigOrSetIfUndefined("holiday/{$this->holiday_name}/holiday_rule_sandwich"))
             $this->setSandwichHolidayToHolidayTable();
         Logging::debug("the calculated holidays are -- " . print_r($this->holidays, true));
     }
@@ -64,7 +66,8 @@ class HolidaysOfTheYear
         $ved = $this->calculateVernalEquinoxDay()->format("n/j");
         $aed = $this->calculateAutumnalEquinoxDay()->format("n/j");
         $substitution_needed_list = [];
-        foreach (Config::HOLIDAYS_RULE_SET as $target_rule) {
+        $holidays_rule_set = Config::getConfigOrSetIfUndefined("holiday/{$this->holiday_name}/rule_set") ?? [];
+        foreach ($holidays_rule_set as $target_rule) {
             $target_day = $this->this_year->modify(str_replace(["VED", "AED"], [$ved, $aed], $target_rule["rule"]));
             Logging::debug("target day: " . $target_day->format(\DateTimeInterface::ATOM));
             
@@ -125,9 +128,13 @@ class HolidaysOfTheYear
             
             Logging::debug("sandwich holiday detected!");
             $index = intval($target_day->format("z"));
-            $this->holidays[$index] = new Holiday(\DateTimeImmutable::createFromMutable($target_day),
-                DayType::SandwichHoliday, Config::DEFAULT_HOLIDAY_NAME,
-                new Color(Config::DEFAULT_HOLIDAY_COLOR));
+            $default_holiday_color = Config::getConfigOrSetIfUndefined("holiday/{$this->holiday_name}/default_holiday_color");
+            $this->holidays[$index] = new Holiday(
+                \DateTimeImmutable::createFromMutable($target_day),
+                DayType::SandwichHoliday,
+                Config::getConfigOrSetIfUndefined("holiday/{$this->holiday_name}/default_holiday_name"),
+                new Color($default_holiday_color ?? [0, 0, 0, 0])
+            );
             $target_day->modify("+1 day");
         }
     }
@@ -187,10 +194,19 @@ class HolidaysOfTheYear
             Logging::debug("substitute day: " . $target_day->format(\DateTimeInterface::ATOM));
             
             $index = intval($target_day->format("z"));
-            if (isset($this->holidays[$index]) && !is_null($this->holidays[$index]->name) && !is_null(Config::HOLIDAY_NAME_SEPARATOR)) {
-                $holiday_name = $this->holidays[$index]->name . Config::HOLIDAY_NAME_SEPARATOR . Config::SUBSTITUTE_HOLIDAY_NAME;
+            $holiday_name_separator = Config::getConfigOrSetIfUndefined("holiday/{$this->holiday_name}/holiday_name_separator");
+            $substitute_holiday_name = Config::getConfigOrSetIfUndefined(
+                "holiday/{$this->holiday_name}/substitute_holiday_name",
+                Config::getConfigOrSetIfUndefined("holiday/{$this->holiday_name}/default_holiday_name", "")
+            );
+            if (
+                isset($this->holidays[$index])
+                && !is_null($this->holidays[$index]->name)
+                && !is_null($holiday_name_separator)
+            ) {
+                $holiday_name = $this->holidays[$index]->name . $holiday_name_separator . $substitute_holiday_name;
             } else {
-                $holiday_name = Config::SUBSTITUTE_HOLIDAY_NAME;
+                $holiday_name = $substitute_holiday_name;
             }
             $this->holidays[$index] = new Holiday(\DateTimeImmutable::createFromMutable($target_day),
                 DayType::SubstituteHoliday, $holiday_name, $target->color);

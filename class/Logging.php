@@ -10,7 +10,7 @@ class Logging
     
     public static function getLogFile()
     {
-        return Common::getAbsolutePath(Config::LOG_FILE);
+        return Common::getAbsolutePath(Config::getConfig("logging/file"));
     }
     
     public static function generateMessage($message, $error_level, $caller = null): string
@@ -59,7 +59,7 @@ class Logging
     
     public static function getLogLevel(): ErrorLevel
     {
-        $log_level_str = Config::LOG_LEVEL;
+        $log_level_str = Config::getConfig("logging/level");
         $log_level = ErrorLevel::getErrorLevel($log_level_str);
         if (is_null($log_level))
             throw new \Exception("[FATAL] The logging level (" . $log_level_str . ") is invalid.");
