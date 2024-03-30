@@ -1,0 +1,409 @@
+style:
+  jp-600x488-1:
+    background_image: ./image/background-jp-600x488-1.png
+    # first_wday
+    # first day of week
+    # 0=Sunday, ..., 6=Saturday
+    first_wday: 0
+    # holiday
+    # the name of the holiday defined in the config.
+    holiday: japan-1
+    # labels
+    # just print one value into one box
+    # (structure)
+    #   name-of-the-label:
+    #     diff: date or time difference from now
+    #     locale: when set other than null, `format` is passed to IntlDateFormatter with the specified `locale`
+    #     format: "holiday_name" or DateTime format
+    #             When "holiday_name" is specified, the holiday name is printed if the specified date is any one of
+    #             `national_holiday`, `work_holiday`, `substitute_holiday` and `sandwich_holiday`.
+    #             Any other value is passed to PHP's DateTime as a format string.
+    #             Note that you should always specify the words "first day of" preceding any month words,
+    #             such as "first day of next month" because PHP calculates the number of days of the months
+    #             and applies only the calculated days, not the whole month, when "first day of" is not specified,
+    #             which may lead to an unintentional result.
+    #             For example, suppose that today is March 30th, then "previous month" (without "first day of")
+    #             will result in March 2nd (-28 days from today), not February, since February has only 28 days.
+    #             "first day of previous month" will result in Feb 1st.
+    #     font:
+    #       file: the path of the font file
+    #       size: the font size
+    #       color: the color in [R, G, B, A] to print the label when `format` is not "holiday_name"
+    #       holiday_color: if true, the `color` above is overridden by the one defined in `holiday` when the date is a holiday.
+    #     box:
+    #       position: the position in [X, Y] of the area to print the label
+    #       size: the size in [W, H] of the area to print the label
+    labels:
+      this_year_in_western:
+        diff: this year
+        locale: null
+        format: 'Y'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 16
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [230, 3]
+          size: [60, 25]
+      this_year_in_local:
+        diff: this year
+        locale: ja_JP@calendar=japanese
+        format: 'Gy'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 16
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [290, 3]
+          size: [80, 25]
+      this_month_in_numerical:
+        diff: first day of this month
+        locale: null
+        format: 'n'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 80
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [230, 30]
+          size: [140, 100]
+      this_month_in_textual:
+        diff: first day of this month
+        locale: null
+        format: 'F'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 16
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [230, 130]
+          size: [140, 25]
+      next_month_in_numerical:
+        diff: first day of next month
+        locale: null
+        format: 'n'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 20
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [418, 5]
+          size: [40, 30]
+      next_month_in_textual:
+        diff: first day of next month
+        locale: null
+        format: 'F'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [463, 10]
+          size: [100, 20]
+      previous_month_in_numerical:
+        diff: first day of previous month
+        locale: null
+        format: 'n'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 20
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [40, 5]
+          size: [40, 30]
+      previous_month_in_textual:
+        diff: first day of previous month
+        locale: null
+        format: 'F'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [85, 10]
+          size: [100, 20]
+    # calendars
+    # print days of the month into 7(days)x6(weeks) boxes
+    calendars:
+      this_month_days:
+        diff: this day
+        locale: null
+        format: 'j'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 32
+          colors:
+            sunday: [255, 0, 0, 0]
+            monday: [0, 0, 0, 0]
+            tuesday: [0, 0, 0, 0]
+            wednesday: [0, 0, 0, 0]
+            thursday: [0, 0, 0, 0]
+            friday: [0, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        text_boxes:
+          - {position: [ 20, 180], size: [80, 35]}
+          - {position: [100, 180], size: [80, 35]}
+          - {position: [180, 180], size: [80, 35]}
+          - {position: [260, 180], size: [80, 35]}
+          - {position: [340, 180], size: [80, 35]}
+          - {position: [420, 180], size: [80, 35]}
+          - {position: [500, 180], size: [80, 35]}
+          - {position: [ 20, 230], size: [80, 35]}
+          - {position: [100, 230], size: [80, 35]}
+          - {position: [180, 230], size: [80, 35]}
+          - {position: [260, 230], size: [80, 35]}
+          - {position: [340, 230], size: [80, 35]}
+          - {position: [420, 230], size: [80, 35]}
+          - {position: [500, 230], size: [80, 35]}
+          - {position: [ 20, 280], size: [80, 35]}
+          - {position: [100, 280], size: [80, 35]}
+          - {position: [180, 280], size: [80, 35]}
+          - {position: [260, 280], size: [80, 35]}
+          - {position: [340, 280], size: [80, 35]}
+          - {position: [420, 280], size: [80, 35]}
+          - {position: [500, 280], size: [80, 35]}
+          - {position: [ 20, 330], size: [80, 35]}
+          - {position: [100, 330], size: [80, 35]}
+          - {position: [180, 330], size: [80, 35]}
+          - {position: [260, 330], size: [80, 35]}
+          - {position: [340, 330], size: [80, 35]}
+          - {position: [420, 330], size: [80, 35]}
+          - {position: [500, 330], size: [80, 35]}
+          - {position: [ 20, 380], size: [80, 35]}
+          - {position: [100, 380], size: [80, 35]}
+          - {position: [180, 380], size: [80, 35]}
+          - {position: [260, 380], size: [80, 35]}
+          - {position: [340, 380], size: [80, 35]}
+          - {position: [420, 380], size: [80, 35]}
+          - {position: [500, 380], size: [80, 35]}
+          - {position: [ 20, 430], size: [80, 35]}
+          - {position: [100, 430], size: [80, 35]}
+          - {position: [180, 430], size: [80, 35]}
+          - {position: [260, 430], size: [80, 35]}
+          - {position: [340, 430], size: [80, 35]}
+          - {position: [420, 430], size: [80, 35]}
+          - {position: [500, 430], size: [80, 35]}
+        # illumination_boxes
+        # when set, the box corresponding to today is illuminated.
+        illumination_boxes:
+          - {position: [ 20, 180], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [100, 180], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [180, 180], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [260, 180], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [340, 180], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [420, 180], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [500, 180], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 20, 230], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [100, 230], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [180, 230], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [260, 230], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [340, 230], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [420, 230], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [500, 230], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 20, 280], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [100, 280], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [180, 280], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [260, 280], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [340, 280], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [420, 280], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [500, 280], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 20, 330], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [100, 330], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [180, 330], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [260, 330], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [340, 330], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [420, 330], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [500, 330], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 20, 380], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [100, 380], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [180, 380], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [260, 380], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [340, 380], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [420, 380], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [500, 380], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 20, 430], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [100, 430], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [180, 430], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [260, 430], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [340, 430], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [420, 430], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [500, 430], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+      this_month_holidays:
+        diff: this day
+        locale: null
+        format: 'holiday_name'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 9
+          colors: {} # holiday colors are defined in `holiday` section.
+          holiday_color: true
+        text_boxes:
+          - {position: [ 20, 215], size: [80, 15]}
+          - {position: [100, 215], size: [80, 15]}
+          - {position: [180, 215], size: [80, 15]}
+          - {position: [260, 215], size: [80, 15]}
+          - {position: [340, 215], size: [80, 15]}
+          - {position: [420, 215], size: [80, 15]}
+          - {position: [500, 215], size: [80, 15]}
+          - {position: [ 20, 265], size: [80, 15]}
+          - {position: [100, 265], size: [80, 15]}
+          - {position: [180, 265], size: [80, 15]}
+          - {position: [260, 265], size: [80, 15]}
+          - {position: [340, 265], size: [80, 15]}
+          - {position: [420, 265], size: [80, 15]}
+          - {position: [500, 265], size: [80, 15]}
+          - {position: [ 20, 315], size: [80, 15]}
+          - {position: [100, 315], size: [80, 15]}
+          - {position: [180, 315], size: [80, 15]}
+          - {position: [260, 315], size: [80, 15]}
+          - {position: [340, 315], size: [80, 15]}
+          - {position: [420, 315], size: [80, 15]}
+          - {position: [500, 315], size: [80, 15]}
+          - {position: [ 20, 365], size: [80, 15]}
+          - {position: [100, 365], size: [80, 15]}
+          - {position: [180, 365], size: [80, 15]}
+          - {position: [260, 365], size: [80, 15]}
+          - {position: [340, 365], size: [80, 15]}
+          - {position: [420, 365], size: [80, 15]}
+          - {position: [500, 365], size: [80, 15]}
+          - {position: [ 20, 415], size: [80, 15]}
+          - {position: [100, 415], size: [80, 15]}
+          - {position: [180, 415], size: [80, 15]}
+          - {position: [260, 415], size: [80, 15]}
+          - {position: [340, 415], size: [80, 15]}
+          - {position: [420, 415], size: [80, 15]}
+          - {position: [500, 415], size: [80, 15]}
+          - {position: [ 20, 465], size: [80, 15]}
+          - {position: [100, 465], size: [80, 15]}
+          - {position: [180, 465], size: [80, 15]}
+          - {position: [260, 465], size: [80, 15]}
+          - {position: [340, 465], size: [80, 15]}
+          - {position: [420, 465], size: [80, 15]}
+          - {position: [500, 465], size: [80, 15]}
+      next_month_days:
+        diff: first day of next month
+        locale: null
+        format: 'j'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          colors:
+            sunday: [255, 0, 0, 0]
+            monday: [0, 0, 0, 0]
+            tuesday: [0, 0, 0, 0]
+            wednesday: [0, 0, 0, 0]
+            thursday: [0, 0, 0, 0]
+            friday: [0, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        text_boxes:
+          - {position: [398,  35], size: [26, 20]}
+          - {position: [424,  35], size: [26, 20]}
+          - {position: [450,  35], size: [26, 20]}
+          - {position: [476,  35], size: [26, 20]}
+          - {position: [502,  35], size: [26, 20]}
+          - {position: [528,  35], size: [26, 20]}
+          - {position: [554,  35], size: [26, 20]}
+          - {position: [398,  55], size: [26, 20]}
+          - {position: [424,  55], size: [26, 20]}
+          - {position: [450,  55], size: [26, 20]}
+          - {position: [476,  55], size: [26, 20]}
+          - {position: [502,  55], size: [26, 20]}
+          - {position: [528,  55], size: [26, 20]}
+          - {position: [554,  55], size: [26, 20]}
+          - {position: [398,  75], size: [26, 20]}
+          - {position: [424,  75], size: [26, 20]}
+          - {position: [450,  75], size: [26, 20]}
+          - {position: [476,  75], size: [26, 20]}
+          - {position: [502,  75], size: [26, 20]}
+          - {position: [528,  75], size: [26, 20]}
+          - {position: [554,  75], size: [26, 20]}
+          - {position: [398,  95], size: [26, 20]}
+          - {position: [424,  95], size: [26, 20]}
+          - {position: [450,  95], size: [26, 20]}
+          - {position: [476,  95], size: [26, 20]}
+          - {position: [502,  95], size: [26, 20]}
+          - {position: [528,  95], size: [26, 20]}
+          - {position: [554,  95], size: [26, 20]}
+          - {position: [398, 115], size: [26, 20]}
+          - {position: [424, 115], size: [26, 20]}
+          - {position: [450, 115], size: [26, 20]}
+          - {position: [476, 115], size: [26, 20]}
+          - {position: [502, 115], size: [26, 20]}
+          - {position: [528, 115], size: [26, 20]}
+          - {position: [554, 115], size: [26, 20]}
+          - {position: [398, 135], size: [26, 20]}
+          - {position: [424, 135], size: [26, 20]}
+          - {position: [450, 135], size: [26, 20]}
+          - {position: [476, 135], size: [26, 20]}
+          - {position: [502, 135], size: [26, 20]}
+          - {position: [528, 135], size: [26, 20]}
+          - {position: [554, 135], size: [26, 20]}
+      previous_month_days:
+        diff: first day of previous month
+        locale: null
+        format: 'j'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          colors:
+            sunday: [255, 0, 0, 0]
+            monday: [0, 0, 0, 0]
+            tuesday: [0, 0, 0, 0]
+            wednesday: [0, 0, 0, 0]
+            thursday: [0, 0, 0, 0]
+            friday: [0, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        text_boxes:
+          - {position: [ 20,  35], size: [26, 20]}
+          - {position: [ 46,  35], size: [26, 20]}
+          - {position: [ 72,  35], size: [26, 20]}
+          - {position: [ 98,  35], size: [26, 20]}
+          - {position: [124,  35], size: [26, 20]}
+          - {position: [150,  35], size: [26, 20]}
+          - {position: [176,  35], size: [26, 20]}
+          - {position: [ 20,  55], size: [26, 20]}
+          - {position: [ 46,  55], size: [26, 20]}
+          - {position: [ 72,  55], size: [26, 20]}
+          - {position: [ 98,  55], size: [26, 20]}
+          - {position: [124,  55], size: [26, 20]}
+          - {position: [150,  55], size: [26, 20]}
+          - {position: [176,  55], size: [26, 20]}
+          - {position: [ 20,  75], size: [26, 20]}
+          - {position: [ 46,  75], size: [26, 20]}
+          - {position: [ 72,  75], size: [26, 20]}
+          - {position: [ 98,  75], size: [26, 20]}
+          - {position: [124,  75], size: [26, 20]}
+          - {position: [150,  75], size: [26, 20]}
+          - {position: [176,  75], size: [26, 20]}
+          - {position: [ 20,  95], size: [26, 20]}
+          - {position: [ 46,  95], size: [26, 20]}
+          - {position: [ 72,  95], size: [26, 20]}
+          - {position: [ 98,  95], size: [26, 20]}
+          - {position: [124,  95], size: [26, 20]}
+          - {position: [150,  95], size: [26, 20]}
+          - {position: [176,  95], size: [26, 20]}
+          - {position: [ 20, 115], size: [26, 20]}
+          - {position: [ 46, 115], size: [26, 20]}
+          - {position: [ 72, 115], size: [26, 20]}
+          - {position: [ 98, 115], size: [26, 20]}
+          - {position: [124, 115], size: [26, 20]}
+          - {position: [150, 115], size: [26, 20]}
+          - {position: [176, 115], size: [26, 20]}
+          - {position: [ 20, 135], size: [26, 20]}
+          - {position: [ 46, 135], size: [26, 20]}
+          - {position: [ 72, 135], size: [26, 20]}
+          - {position: [ 98, 135], size: [26, 20]}
+          - {position: [124, 135], size: [26, 20]}
+          - {position: [150, 135], size: [26, 20]}
+          - {position: [176, 135], size: [26, 20]}

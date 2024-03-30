@@ -2,7 +2,8 @@
   "require": {
     "php": ">=8.1",
     "ext-gd": "*",
-    "ext-intl": "*"
+    "ext-intl": "*",
+    "ext-yaml": "*"
   },
   "autoload": {
     "psr-4": {

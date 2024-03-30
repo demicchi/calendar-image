@@ -8,7 +8,10 @@ class Calendar
     {
     }
     
-    public static function getMaxBaselineOffsetForDaysOfTheMonth(\DateTimeInterface $date) : int
+    public static function getMaxBaselineOffsetForDaysOfTheMonth(\DateTimeInterface $date, float $font_size,
+                                                                 string $font_file, string $format,
+                                                                 ?HolidaysOfTheYear $holidays = null,
+                                                                 ?string $locale = null, ?string $timezone = null) : int
     {
         $first_day = \DateTimeImmutable::createFromInterface($date)->modify("first day of this month");
         Logging::debug("first day: " . $first_day->format(\DateTimeInterface::ATOM));
@@ -18,11 +21,8 @@ class Calendar
         $target_day = \DateTime::createFromImmutable($first_day);
         while ($target_day <= $last_day) {
             Logging::debug("target day: " . $target_day->format(\DateTimeInterface::ATOM));
-            $bounding_box = Image::calculateBoundingBox(
-                Config::THIS_MONTH_DAYS_FONT_SIZE,
-                Config::THIS_MONTH_DAYS_FONT_FILE,
-                $target_day->format("j")
-            );
+            $print_text = Calendar::getPrintText($target_day, $format, $holidays, $locale, $timezone);
+            $bounding_box = Image::calculateBoundingBox($font_size, $font_file, $print_text);
             $baseline_offset = max($baseline_offset, $bounding_box->baseline_offset);
             Logging::debug("the baseline offset of this day is " . $baseline_offset);
             $target_day->modify("+1 day");
@@ -31,56 +31,81 @@ class Calendar
         return $baseline_offset;
     }
     
-    public static function getTextColorOfTheDay(\GdImage $image, \DateTimeInterface $target_day, array $color_set) : int
+    public static function getPrintText(\DateTimeInterface $target_date, string $format,
+                                        ?HolidaysOfTheYear $holidays = null, ?string $locale = null,
+                                        ?string $timezone = null) : string
     {
-        if ($target_day->format("w") == "0") {
-            $text_color = imagecolorallocatealpha(
-                $image,
-                $color_set["sunday"][0],
-                $color_set["sunday"][1],
-                $color_set["sunday"][2],
-                $color_set["sunday"][3]
-            );
-        } elseif ($target_day->format("w") == "6") {
-            $text_color = imagecolorallocatealpha(
-                $image,
-                $color_set["saturday"][0],
-                $color_set["saturday"][1],
-                $color_set["saturday"][2],
-                $color_set["saturday"][3]
-            );
+        if ($format == "holiday_name" && !is_null($holidays)) {
+            $holiday = $holidays->getHoliday($target_date);
+            $print_text = $holiday->name ?? "";
         } else {
-            $text_color = imagecolorallocatealpha(
-                $image,
-                $color_set["weekday"][0],
-                $color_set["weekday"][1],
-                $color_set["weekday"][2],
-                $color_set["weekday"][3]
-            );
+            if (is_null($locale)) {
+                $print_text = $target_date->format($format);
+            } else {
+                $formatter = new \IntlDateFormatter(
+                    $locale,
+                    \IntlDateFormatter::NONE,
+                    \IntlDateFormatter::NONE,
+                    $timezone,
+                    \IntlDateFormatter::TRADITIONAL
+                );
+                $formatter->setPattern($format);
+                $print_text = $formatter->format($target_date);
+            }
         }
+        return $print_text;
+    }
+    
+    public static function getTextColorOfTheDay(\GdImage $image, \DateTimeInterface $target_date, array $color_set) : int
+    {
+        $day_of_week = strtolower($target_date->format("l"));
+        
+        $text_color = imagecolorallocatealpha(
+            $image,
+            $color_set[$day_of_week][0] ?? 0,
+            $color_set[$day_of_week][1] ?? 0,
+            $color_set[$day_of_week][2] ?? 0,
+            $color_set[$day_of_week][3] ?? 0
+        );
+        
         if ($text_color === false)
             exit("error");
         return $text_color;
     }
     
-    public static function renderDaysCalendar(\GdImage $image, \DateTimeInterface $date,
+    public static function getTextColorOfHoliday(\GdImage $image, \DateTimeInterface $target_date,
+                                                 HolidaysOfTheYear $holidays) : ?int
+    {
+        $holiday = $holidays->getHoliday($target_date);
+        $holiday_color = null;
+        if (!is_null($holiday)) {
+            $holiday_color = imagecolorallocatealpha(
+                $image,
+                $holiday->color->r,
+                $holiday->color->g,
+                $holiday->color->b,
+                $holiday->color->a,
+            );
+        }
+        return $holiday_color;
+    }
+    
+    public static function renderDaysCalendar(\GdImage $image, \DateTimeInterface $date, int $first_wday,
                                               array $days_box_set, float $days_font_size, string $days_font_file,
-                                              array $color_set, string $date_format,
-                                              HolidaysOfTheYear $holidays, ?array $holidays_box_set = null,
-                                              ?float $holidays_font_size = null, ?string $holidays_font_file = null,
-                                              ?array $target_date_box_set = null,
-                                              array|int|null $target_date_background_color = null,
-                                              array|int|null $target_date_line_color = null): void
+                                              $color_set, bool $holiday_color, string $date_format,
+                                              HolidaysOfTheYear $holidays, ?string $locale = null,
+                                              ?string $timezone = null, ?array $illumination_box_set = null) : void
     {
         $first_day = \DateTimeImmutable::createFromInterface($date)->modify("first day of this month");
         Logging::debug("first day: " . $first_day->format(\DateTimeInterface::ATOM));
         $last_day = \DateTimeImmutable::createFromInterface($date)->modify("last day of this month");
         Logging::debug("last day: " . $last_day->format(\DateTimeInterface::ATOM));
         
-        $first_box = (intval($first_day->format("w")) + 7 - Config::FIRST_WDAY) % 7;
+        $first_box = (intval($first_day->format("w")) + 7 - $first_wday) % 7;
         
         Logging::debug("Calculate the baseline offset for the days in this month");
-        $baseline_offset = self::getMaxBaselineOffsetForDaysOfTheMonth($date);
+        $baseline_offset = self::getMaxBaselineOffsetForDaysOfTheMonth($date, $days_font_size, $days_font_file,
+            $date_format, $holidays, $locale, $timezone);
         
         Logging::debug("Write the days of this month");
         $target_day = \DateTime::createFromImmutable($first_day);
@@ -88,48 +113,29 @@ class Calendar
         while ($target_day <= $last_day) {
             Logging::debug("target day: " . $target_day->format(\DateTimeInterface::ATOM));
             
-            if (intval($target_day->diff($date)->format("%a")) == 0) {
-                if (!is_null($target_date_box_set)) {
+            if (!is_null($illumination_box_set)) {
+                if (intval($target_day->diff($date)->format("%a")) == 0) {
                     Image::illuminateBox(
                         $image,
-                        $target_date_box_set[$target_box]["position"][0],
-                        $target_date_box_set[$target_box]["position"][1],
-                        $target_date_box_set[$target_box]["size"][0],
-                        $target_date_box_set[$target_box]["size"][1],
-                        $target_date_background_color,
-                        $target_date_line_color,
-                        $target_date_box_set[$target_box]["shape"]
+                        $illumination_box_set[$target_box]["position"][0],
+                        $illumination_box_set[$target_box]["position"][1],
+                        $illumination_box_set[$target_box]["size"][0],
+                        $illumination_box_set[$target_box]["size"][1],
+                        $illumination_box_set[$target_box]["background_color"],
+                        $illumination_box_set[$target_box]["line_color"],
+                        $illumination_box_set[$target_box]["shape"]
                     );
                 }
             }
             
-            $holiday = $holidays->getHoliday($target_day);
-            if (is_null($holiday)) {
-                $text_color = self::getTextColorOfTheDay($image, $target_day, $color_set);
-            } else {
-                $text_color = imagecolorallocatealpha(
-                    $image,
-                    $holiday->color->r,
-                    $holiday->color->g,
-                    $holiday->color->b,
-                    $holiday->color->a,
-                );
-                
-                if (!is_null($holidays_box_set)) {
-                    $text_box = Image::writeTextInBox(
-                        $image,
-                        $holidays_box_set[$target_box]["position"],
-                        $holidays_box_set[$target_box]["size"],
-                        $holidays_font_size ?? Config::THIS_MONTH_HOLIDAYS_FONT_FILE,
-                        $holidays_font_file ?? Config::THIS_MONTH_HOLIDAYS_FONT_SIZE,
-                        $text_color,
-                        $holiday->name ?? Config::DEFAULT_HOLIDAY_NAME
-                    );
-                    
-                    if ($text_box === false)
-                        exit("error");
-                }
-            }
+            $print_text = Calendar::getPrintText($target_day, $date_format, $holidays, $locale, $timezone);
+            
+            $text_color = self::getTextColorOfTheDay($image, $target_day, $color_set);
+            if (!$text_color)
+                $text_color = [0, 0, 0, 0];
+            
+            if ($holiday_color)
+                $text_color = Calendar::getTextColorOfHoliday($image, $target_day, $holidays) ?? $text_color;
             
             $text_box = Image::writeTextInBox(
                 $image,
@@ -138,7 +144,7 @@ class Calendar
                 $days_font_size,
                 $days_font_file,
                 $text_color,
-                $target_day->format($date_format),
+                $print_text,
                 $baseline_offset
             );
             

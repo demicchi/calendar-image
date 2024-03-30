@@ -80,7 +80,6 @@ composer.phar
 /vendor/
 
 /.idea/
-/log/
-/font/
-/class/Config.php
-
+/log/log.txt
+/font/*.ttf
+config/config.yml

@@ -7,6 +7,11 @@ if (!defined('CALENDARIMAGE_UNIQUE_ID'))
 
 require_once dirname(__FILE__)."/class/Common.php";
 require_once dirname(__FILE__)."/class/Config.php";
+
+Config::loadConfig();
+Config::getConfigOrSetIfUndefined("logging/level", "debug");
+Config::getConfigOrSetIfUndefined("logging/file", "./log/log.txt");
+
 require_once dirname(__FILE__)."/class/ErrorLevel.php";
 require_once dirname(__FILE__)."/class/Logging.php";
 
@@ -21,14 +26,24 @@ require_once dirname(__FILE__)."/class/Image.php";
 require_once dirname(__FILE__)."/class/Calendar.php";
 
 
-$now = new \DateTimeImmutable("now", new \DateTimeZone(Config::TIMEZONE));
+// --------------------------------------------------------------------------------
+// Initialize
+// --------------------------------------------------------------------------------
+
+$timezone = Config::getConfigOrSetIfUndefined("timezone", date_default_timezone_get());
+
+$now = new \DateTimeImmutable("now", new \DateTimeZone($timezone));
 Logging::debug("now: " . $now->format(\DateTimeInterface::ATOM));
 
 $dither = null;
 $pack_bits = null;
 
+// --------------------------------------------------------------------------------
+// Define a rendering mode
+// --------------------------------------------------------------------------------
+
 if (isset($_GET["mode"])) {
-    $mode = strtolower($_GET["mode"]);
+    $mode = strtolower(Common::sanitizeUserInput($_GET["mode"]));
     switch ($mode) {
         case "timer":
             // echo seconds to 00:00 next day
@@ -47,14 +62,16 @@ if (isset($_GET["mode"])) {
     }
 }
 
-
+// --------------------------------------------------------------------------------
+// Define a date
+// --------------------------------------------------------------------------------
 
 if (isset($_GET["date"])) {
-    $query_date = strtolower($_GET["date"]);
+    $query_date = strtolower(Common::sanitizeUserInput($_GET["date"]));
     // set $now when valid yyyymmdd is passed via GET
     if (preg_match('/^\d{8}$/', $query_date) === 1) {
         try {
-            $target_date = new \DateTimeImmutable($query_date, new \DateTimeZone(Config::TIMEZONE));
+            $target_date = new \DateTimeImmutable($query_date, new \DateTimeZone($timezone));
         } catch (\Exception) {
             $target_date = $now;
         }
@@ -62,232 +79,119 @@ if (isset($_GET["date"])) {
     }
 }
 
+// --------------------------------------------------------------------------------
+// Define a calendar style
+// --------------------------------------------------------------------------------
 
-$image = imagecreatefromstring(file_get_contents(Config::BACKGROUND_IMAGE));
+$style = Config::getConfig("default_style");
+if (isset($_GET["style"])) {
+    $query_style = strtolower(Common::sanitizeUserInput($_GET["style"]));
+    if (empty(Config::getConfigOrSetIfUndefined("style/{$query_style}")))
+        $query_style = $style;
+    $style = $query_style;
+}
+
+
+// --------------------------------------------------------------------------------
+// Prepare a base image
+// --------------------------------------------------------------------------------
+
+
+$image = imagecreatefromstring(file_get_contents(Config::getConfig("style/{$style}/background_image")));
 if ($image === false)
     exit("error");
 
 
 // --------------------------------------------------------------------------------
-// This year in western style
+// Render labels
 // --------------------------------------------------------------------------------
 
-Logging::debug("Write this year in western style");
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::THIS_YEAR_IN_WESTERN_BOX["position"],
-    Config::THIS_YEAR_IN_WESTERN_BOX["size"],
-    Config::THIS_YEAR_IN_WESTERN_FONT_SIZE,
-    Config::THIS_YEAR_IN_WESTERN_FONT_FILE,
-    Config::THIS_YEAR_IN_WESTERN_FONT_COLOR,
-    $now->format(Config::THIS_YEAR_IN_WESTERN_DATE_FORMAT)
-);
-
-if ($text_box === false)
-    exit("error");
-
-// --------------------------------------------------------------------------------
-// This year in local style
-// --------------------------------------------------------------------------------
-
-Logging::debug("Write this year in local style");
-$formatter = new \IntlDateFormatter(
-    Config::CALENDAR_LOCALE,
-    \IntlDateFormatter::NONE,
-    \IntlDateFormatter::NONE,
-    Config::TIMEZONE,
-    \IntlDateFormatter::TRADITIONAL
-);
-$formatter->setPattern(Config::THIS_YEAR_IN_LOCAL_DATE_FORMAT);
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::THIS_YEAR_IN_LOCAL_BOX["position"],
-    Config::THIS_YEAR_IN_LOCAL_BOX["size"],
-    Config::THIS_YEAR_IN_LOCAL_FONT_SIZE,
-    Config::THIS_YEAR_IN_LOCAL_FONT_FILE,
-    Config::THIS_YEAR_IN_LOCAL_FONT_COLOR,
-    $formatter->format($now)
-);
-
-if ($text_box === false)
-    exit("error");
-
-// --------------------------------------------------------------------------------
-// This month in numerical
-// --------------------------------------------------------------------------------
-
-Logging::debug("Write this month in numerical");
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::THIS_MONTH_IN_NUMERICAL_BOX["position"],
-    Config::THIS_MONTH_IN_NUMERICAL_BOX["size"],
-    Config::THIS_MONTH_IN_NUMERICAL_FONT_SIZE,
-    Config::THIS_MONTH_IN_NUMERICAL_FONT_FILE,
-    Config::THIS_MONTH_IN_NUMERICAL_FONT_COLOR,
-    $now->format(Config::THIS_MONTH_IN_NUMERICAL_DATE_FORMAT)
-);
-
-if ($text_box === false)
-    exit("error");
-
-// --------------------------------------------------------------------------------
-// This month in textual
-// --------------------------------------------------------------------------------
-
-Logging::debug("Write this month in textual");
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::THIS_MONTH_IN_TEXTUAL_BOX["position"],
-    Config::THIS_MONTH_IN_TEXTUAL_BOX["size"],
-    Config::THIS_MONTH_IN_TEXTUAL_FONT_SIZE,
-    Config::THIS_MONTH_IN_TEXTUAL_FONT_FILE,
-    Config::THIS_MONTH_IN_TEXTUAL_FONT_COLOR,
-    $now->format(Config::THIS_MONTH_IN_TEXTUAL_DATE_FORMAT)
-);
-
-if ($text_box === false)
-    exit("error");
-
-// --------------------------------------------------------------------------------
-// Calendar of this month
-// --------------------------------------------------------------------------------
-
-Logging::debug("Render a calendar of this month");
-$holidays_this_month = new HolidaysOfTheYear($now, true);
-Calendar::renderDaysCalendar(
-    $image,
-    $now,
-    Config::THIS_MONTH_DAYS_BOX_SET,
-    Config::THIS_MONTH_DAYS_FONT_SIZE,
-    Config::THIS_MONTH_DAYS_FONT_FILE,
-    Config::THIS_MONTH_DAYS_FONT_COLOR_SET,
-    Config::THIS_MONTH_DAYS_DATE_FORMAT,
-    $holidays_this_month,
-    Config::THIS_MONTH_HOLIDAYS_BOX_SET,
-    Config::THIS_MONTH_HOLIDAYS_FONT_SIZE,
-    Config::THIS_MONTH_HOLIDAYS_FONT_FILE,
-    Config::THIS_MONTH_TARGET_DAY_BOX_SET,
-    Config::THIS_MONTH_DAYS_BACKGROUND_COLOR,
-    Config::THIS_MONTH_DAYS_LINE_COLOR
-);
-
-// --------------------------------------------------------------------------------
-// Calendar of next month
-// --------------------------------------------------------------------------------
-
-$next_month = $now->modify("first day of next month");
-Logging::debug("next month: " . $next_month->format(\DateTimeInterface::ATOM));
-
-Logging::debug("Write next month in numerical");
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::NEXT_MONTH_IN_NUMERICAL_BOX["position"],
-    Config::NEXT_MONTH_IN_NUMERICAL_BOX["size"],
-    Config::NEXT_MONTH_IN_NUMERICAL_FONT_SIZE,
-    Config::NEXT_MONTH_IN_NUMERICAL_FONT_FILE,
-    Config::NEXT_MONTH_IN_NUMERICAL_FONT_COLOR,
-    $next_month->format(Config::NEXT_MONTH_IN_NUMERICAL_DATE_FORMAT)
-);
-
-if ($text_box === false)
-    exit("error");
-
-
-Logging::debug("Write next month in textual");
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::NEXT_MONTH_IN_TEXTUAL_BOX["position"],
-    Config::NEXT_MONTH_IN_TEXTUAL_BOX["size"],
-    Config::NEXT_MONTH_IN_TEXTUAL_FONT_SIZE,
-    Config::NEXT_MONTH_IN_TEXTUAL_FONT_FILE,
-    Config::NEXT_MONTH_IN_TEXTUAL_FONT_COLOR,
-    $next_month->format(Config::NEXT_MONTH_IN_TEXTUAL_DATE_FORMAT)
-);
-
-if ($text_box === false)
-    exit("error");
-
-
-Logging::debug("Render a calendar of next month");
-if ($next_month->format("Y") == $now->format("Y")) {
-    $holidays_next_month = $holidays_this_month;
-} else {
-    $holidays_next_month = new HolidaysOfTheYear($next_month, true);
+$labels = Config::getConfigOrSetIfUndefined("style/{$style}/labels");
+if (is_array($labels)) {
+    foreach ($labels as $label_name => $label) {
+        Logging::debug("Write a label -- {$label_name}");
+        $target_date = $now->modify(Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/diff",
+            "this day"));
+        Logging::debug("target date: " . $target_date->format(\DateTimeInterface::ATOM));
+        
+        $holidays = new HolidaysOfTheYear($target_date, Config::getConfig("style/{$style}/holiday"), true);
+        $print_text = Calendar::getPrintText(
+            $target_date,
+            Config::getConfig("style/{$style}/labels/{$label_name}/format"),
+            $holidays,
+            Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/locale"),
+            $timezone
+        );
+        
+        $color = Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/font/color");
+        if (!$color)
+            $color = [0, 0, 0, 0];
+        
+        if (Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/font/holiday_color")) {
+            $holiday_color = Calendar::getTextColorOfHoliday($image, $target_date, $holidays);
+            $color = $holiday_color ?? $color;
+        }
+        
+        $text_box = Image::writeTextInBox(
+            $image,
+            Config::getConfig("style/{$style}/labels/{$label_name}/box/position"),
+            Config::getConfig("style/{$style}/labels/{$label_name}/box/size"),
+            Config::getConfig("style/{$style}/labels/{$label_name}/font/size"),
+            Config::getConfig("style/{$style}/labels/{$label_name}/font/file"),
+            $color,
+            $print_text
+        );
+        
+        if ($text_box === false)
+            exit("error");
+    }
 }
-Calendar::renderDaysCalendar(
-    $image,
-    $next_month,
-    Config::NEXT_MONTH_DAYS_BOX_SET,
-    Config::NEXT_MONTH_DAYS_FONT_SIZE,
-    Config::NEXT_MONTH_DAYS_FONT_FILE,
-    Config::NEXT_MONTH_DAYS_FONT_COLOR_SET,
-    Config::NEXT_MONTH_DAYS_DATE_FORMAT,
-    $holidays_next_month
-);
 
 
 // --------------------------------------------------------------------------------
-// Calendar of previous month
+// Render calendars
 // --------------------------------------------------------------------------------
 
-$previous_month = $now->modify("first day of previous month");
-Logging::debug("previous month: " . $previous_month->format(\DateTimeInterface::ATOM));
-
-Logging::debug("Write previous month in numerical");
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::PREVIOUS_MONTH_IN_NUMERICAL_BOX["position"],
-    Config::PREVIOUS_MONTH_IN_NUMERICAL_BOX["size"],
-    Config::PREVIOUS_MONTH_IN_NUMERICAL_FONT_SIZE,
-    Config::PREVIOUS_MONTH_IN_NUMERICAL_FONT_FILE,
-    Config::PREVIOUS_MONTH_IN_NUMERICAL_FONT_COLOR,
-    $previous_month->format(Config::PREVIOUS_MONTH_IN_NUMERICAL_DATE_FORMAT)
-);
-
-if ($text_box === false)
-    exit("error");
-
-
-Logging::debug("Write previous month in textual");
-$text_box = Image::writeTextInBox(
-    $image,
-    Config::PREVIOUS_MONTH_IN_TEXTUAL_BOX["position"],
-    Config::PREVIOUS_MONTH_IN_TEXTUAL_BOX["size"],
-    Config::PREVIOUS_MONTH_IN_TEXTUAL_FONT_SIZE,
-    Config::PREVIOUS_MONTH_IN_TEXTUAL_FONT_FILE,
-    Config::PREVIOUS_MONTH_IN_TEXTUAL_FONT_COLOR,
-    $previous_month->format(Config::PREVIOUS_MONTH_IN_TEXTUAL_DATE_FORMAT)
-);
-
-if ($text_box === false)
-    exit("error");
-
-Logging::debug("Render a calendar of previous month");
-if ($previous_month->format("Y") == $now->format("Y")) {
-    $holidays_previous_month = $holidays_this_month;
-} else {
-    $holidays_previous_month = new HolidaysOfTheYear($previous_month, true);
+$calendars = Config::getConfigOrSetIfUndefined("style/{$style}/calendars");
+if (is_array($calendars)) {
+    foreach ($calendars as $calendar_name => $calendar) {
+        Logging::debug("Write a calendar -- {$calendar_name}");
+        $target_date = $now->modify(Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/diff",
+            "this day"));
+        Logging::debug("target date: " . $target_date->format(\DateTimeInterface::ATOM));
+        
+        Calendar::renderDaysCalendar(
+            $image,
+            $target_date,
+            Config::getConfigOrSetIfUndefined("style/{$style}/first_wday", 0),
+            Config::getConfig("style/{$style}/calendars/{$calendar_name}/text_boxes"),
+            Config::getConfig("style/{$style}/calendars/{$calendar_name}/font/size"),
+            Config::getConfig("style/{$style}/calendars/{$calendar_name}/font/file"),
+            Config::getConfig("style/{$style}/calendars/{$calendar_name}/font/colors"),
+            Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/font/holiday_color"),
+            Config::getConfig("style/{$style}/calendars/{$calendar_name}/format"),
+            new HolidaysOfTheYear($target_date, Config::getConfig("style/{$style}/holiday"), true),
+            Config::getConfig("style/{$style}/calendars/{$calendar_name}/locale"),
+            $timezone,
+            Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/illumination_boxes")
+        );
+        
+    }
 }
-Calendar::renderDaysCalendar(
-    $image,
-    $previous_month,
-    Config::PREVIOUS_MONTH_DAYS_BOX_SET,
-    Config::PREVIOUS_MONTH_DAYS_FONT_SIZE,
-    Config::PREVIOUS_MONTH_DAYS_FONT_FILE,
-    Config::PREVIOUS_MONTH_DAYS_FONT_COLOR_SET,
-    Config::PREVIOUS_MONTH_DAYS_DATE_FORMAT,
-    $holidays_previous_month
-);
 
 
 // --------------------------------------------------------------------------------
 // Dither the image
 // --------------------------------------------------------------------------------
 
-if (!is_null($dither) && isset(Config::DITHER_PALETTE[$dither]["palette"])) {
+$palette = null;
+if (!is_null($dither))
+    $palette = Config::getConfigOrSetIfUndefined("dither_palette/{$dither}/palette");
+
+if (!is_null($palette)) {
     $converter = new \StudioDemmys\lib\GDIndexedColorConverter\GDIndexedColorConverter();
-    $dithered = $converter->convertToIndexedColor($image, Config::DITHER_PALETTE[$dither]["palette"],
-        Config::DITHER_PALETTE[$dither]["amount"] ?? 0.75, !is_null($pack_bits));
+    $dithered = $converter->convertToIndexedColor($image, $palette,
+        Config::getConfigOrSetIfUndefined("dither_palette/{$dither}/amount") ?? 0.75, !is_null($pack_bits));
     if (!is_null($pack_bits)) {
         imagedestroy($image);
     }
