@@ -28,8 +28,12 @@ style:
     #     font:
     #       file: the path of the font file
     #       size: the font size
-    #       color: the color in [R, G, B, A] to print the label when `format` is not "holiday_name"
-    #       holiday_color: if true, the `color` above is overridden by the one defined in `holiday` when the date is a holiday.
+    #       color: the color in [R, G, B, A] to print the label. `wday_colors` precedes this value.
+    #       wday_colors:
+    #         sunday,monday,...,saturday: the color in [R, G, B, A] to print the label when the day of the week
+    #                                     equals to the key.
+    #       holiday_color: if true, the `color` and `wday_colors` above is overridden by the one defined in `holiday`
+    #                      when the date is a holiday.
     #     box:
     #       position: the position in [X, Y] of the area to print the label
     #       size: the size in [W, H] of the area to print the label
@@ -140,13 +144,9 @@ style:
         font:
           file: ./font/ZenMaruGothic-Black.ttf
           size: 32
-          colors:
+          color: [0, 0, 0, 0]
+          wday_colors:
             sunday: [255, 0, 0, 0]
-            monday: [0, 0, 0, 0]
-            tuesday: [0, 0, 0, 0]
-            wednesday: [0, 0, 0, 0]
-            thursday: [0, 0, 0, 0]
-            friday: [0, 0, 0, 0]
             saturday: [0, 0, 255, 0]
           holiday_color: true
         text_boxes:
@@ -244,6 +244,7 @@ style:
         font:
           file: ./font/ZenMaruGothic-Medium.ttf
           size: 9
+          color: [] # holiday colors are defined in `holiday` section.
           colors: {} # holiday colors are defined in `holiday` section.
           holiday_color: true
         text_boxes:
@@ -296,7 +297,8 @@ style:
         font:
           file: ./font/ZenMaruGothic-Medium.ttf
           size: 14
-          colors:
+          color: [0, 0, 0, 0]
+          wday_colors:
             sunday: [255, 0, 0, 0]
             monday: [0, 0, 0, 0]
             tuesday: [0, 0, 0, 0]
@@ -355,7 +357,8 @@ style:
         font:
           file: ./font/ZenMaruGothic-Medium.ttf
           size: 14
-          colors:
+          color: [0, 0, 0, 0]
+          wday_colors:
             sunday: [255, 0, 0, 0]
             monday: [0, 0, 0, 0]
             tuesday: [0, 0, 0, 0]

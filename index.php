@@ -123,13 +123,17 @@ if (is_array($labels)) {
             $timezone
         );
         
-        $color = Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/font/color");
-        if (!$color)
-            $color = [0, 0, 0, 0];
+        $default_color = Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/font/color", [0, 0, 0, 0]);
         
-        if (Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/font/holiday_color")) {
+        $text_color = Calendar::getTextColorOfTheDay(
+            $image,
+            $target_date,
+            Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/font/wday_colors", []),
+            $default_color
+        );
+        if (Config::getConfigOrSetIfUndefined("style/{$style}/labels/{$label_name}/font/holiday_color", false)) {
             $holiday_color = Calendar::getTextColorOfHoliday($image, $target_date, $holidays);
-            $color = $holiday_color ?? $color;
+            $text_color = $holiday_color ?? $text_color;
         }
         
         $text_box = Image::writeTextInBox(
@@ -138,7 +142,7 @@ if (is_array($labels)) {
             Config::getConfig("style/{$style}/labels/{$label_name}/box/size"),
             Config::getConfig("style/{$style}/labels/{$label_name}/font/size"),
             Config::getConfig("style/{$style}/labels/{$label_name}/font/file"),
-            $color,
+            $text_color,
             $print_text
         );
         
@@ -167,11 +171,12 @@ if (is_array($calendars)) {
             Config::getConfig("style/{$style}/calendars/{$calendar_name}/text_boxes"),
             Config::getConfig("style/{$style}/calendars/{$calendar_name}/font/size"),
             Config::getConfig("style/{$style}/calendars/{$calendar_name}/font/file"),
-            Config::getConfig("style/{$style}/calendars/{$calendar_name}/font/colors"),
+            Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/font/wday_colors", []),
+            Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/font/color", [0, 0, 0, 0]),
             Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/font/holiday_color"),
             Config::getConfig("style/{$style}/calendars/{$calendar_name}/format"),
             new HolidaysOfTheYear($target_date, Config::getConfig("style/{$style}/holiday"), true),
-            Config::getConfig("style/{$style}/calendars/{$calendar_name}/locale"),
+            Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/locale"),
             $timezone,
             Config::getConfigOrSetIfUndefined("style/{$style}/calendars/{$calendar_name}/illumination_boxes")
         );

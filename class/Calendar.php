@@ -56,16 +56,18 @@ class Calendar
         return $print_text;
     }
     
-    public static function getTextColorOfTheDay(\GdImage $image, \DateTimeInterface $target_date, array $color_set) : int
+    public static function getTextColorOfTheDay(\GdImage $image, \DateTimeInterface $target_date,
+                                                array $color_set = [], array $default_color = [0, 0, 0, 0]) : int
     {
         $day_of_week = strtolower($target_date->format("l"));
         
+        $print_color = $color_set[$day_of_week] ?? $default_color;
         $text_color = imagecolorallocatealpha(
             $image,
-            $color_set[$day_of_week][0] ?? 0,
-            $color_set[$day_of_week][1] ?? 0,
-            $color_set[$day_of_week][2] ?? 0,
-            $color_set[$day_of_week][3] ?? 0
+            $print_color[0] ?? 0,
+            $print_color[1] ?? 0,
+            $print_color[2] ?? 0,
+            $print_color[3] ?? 0
         );
         
         if ($text_color === false)
@@ -92,8 +94,8 @@ class Calendar
     
     public static function renderDaysCalendar(\GdImage $image, \DateTimeInterface $date, int $first_wday,
                                               array $days_box_set, float $days_font_size, string $days_font_file,
-                                              $color_set, bool $holiday_color, string $date_format,
-                                              HolidaysOfTheYear $holidays, ?string $locale = null,
+                                              array $color_set, array $default_color, bool $holiday_color,
+                                              string $date_format, HolidaysOfTheYear $holidays, ?string $locale = null,
                                               ?string $timezone = null, ?array $illumination_box_set = null) : void
     {
         $first_day = \DateTimeImmutable::createFromInterface($date)->modify("first day of this month");
@@ -130,7 +132,7 @@ class Calendar
             
             $print_text = Calendar::getPrintText($target_day, $date_format, $holidays, $locale, $timezone);
             
-            $text_color = self::getTextColorOfTheDay($image, $target_day, $color_set);
+            $text_color = self::getTextColorOfTheDay($image, $target_day, $color_set, $default_color);
             if (!$text_color)
                 $text_color = [0, 0, 0, 0];
             
