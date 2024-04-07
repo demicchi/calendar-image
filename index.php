@@ -186,6 +186,40 @@ if (is_array($calendars)) {
 
 
 // --------------------------------------------------------------------------------
+// Render external images
+// --------------------------------------------------------------------------------
+
+$external_images = Config::getConfigOrSetIfUndefined("style/{$style}/images");
+if (is_array($external_images)) {
+    foreach ($external_images as $external_image_name => $external_image) {
+        Logging::debug("Render an external image -- {$external_image_name}");
+        
+        $source_image_url = Config::getConfig("style/{$style}/images/{$external_image_name}/url");
+        $source_image = imagecreatefromstring(file_get_contents($source_image_url));
+        if ($source_image !== false) {
+            $source_image_width = imagesx($source_image);
+            $source_image_height = imagesy($source_image);
+            imagecopyresampled(
+                $image,
+                $source_image,
+                (Config::getConfig("style/{$style}/images/{$external_image_name}/box/position"))[0],
+                (Config::getConfig("style/{$style}/images/{$external_image_name}/box/position"))[1],
+                0,
+                0,
+                (Config::getConfig("style/{$style}/images/{$external_image_name}/box/size"))[0],
+                (Config::getConfig("style/{$style}/images/{$external_image_name}/box/size"))[1],
+                $source_image_width,
+                $source_image_height
+            );
+        } else {
+            Logging::warn("Failed to load the image -- {$source_image_url}");
+            if (Config::getConfigOrSetIfUndefined("style/{$style}/images/{$external_image_name}/mandatory", false))
+                exit("error");
+        }
+    }
+}
+
+// --------------------------------------------------------------------------------
 // Dither the image
 // --------------------------------------------------------------------------------
 

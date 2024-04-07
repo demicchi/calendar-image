@@ -4,7 +4,7 @@ logging:
   level: debug
   file: ./log/log.txt
 timezone: Asia/Tokyo
-default_style: jp-600x488-1
+default_style: sample-style-1
 
 include_dir: ./config/include
 

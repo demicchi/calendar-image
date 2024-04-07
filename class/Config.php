@@ -14,17 +14,15 @@ class Config
     {
     }
     
-    public static function loadConfig(?string $path = self::CONFIG_FILE): void
+    public static function loadConfig(): void
+    {
+        static::loadConfigRecursive( static::CONFIG_FILE, 0);
+    }
+    
+    protected static function loadConfigRecursive(string $path, int $recursive_count): void
     {
         global $__global_config;
-        if (!isset($__global_config["recursive_count"]))
-            $__global_config["recursive_count"] = 0;
-        if ($__global_config["recursive_count"] >= self::RECURSIVE_INCLUDE_LIMIT)
-            return;
-        $__global_config["recursive_count"]++;
         
-        if (empty($path))
-            $path = self::CONFIG_FILE;
         $config_path = Common::getAbsolutePath($path);
         
         if (!isset($__global_config["yaml"]))
@@ -36,15 +34,23 @@ class Config
             throw new \Exception("[FATAL] failed to load " . $config_path . ".");
         $__global_config["yaml"] = array_merge_recursive($__global_config["yaml"], $yaml_config);
         
-        if (isset($__global_config["yaml"]["include_dir"])) {
-            $include_dir = $__global_config["yaml"]["include_dir"];
-            unset($__global_config["yaml"]["include_dir"]);
-            $include_files = self::listConfigFile($include_dir);
+        
+        // recursive config loading below
+        if (!isset($__global_config["yaml"]["include_dir"]))
+            return;
+        $include_dir = $__global_config["yaml"]["include_dir"];
+        unset($__global_config["yaml"]["include_dir"]);
+        if ($recursive_count >= static::RECURSIVE_INCLUDE_LIMIT)
+            return;
+        $recursive_count++;
+        if (!is_array($include_dir))
+            $include_dir = [$include_dir];
+        foreach ($include_dir as $dir) {
+            $include_files = static::listConfigFile($dir);
             foreach ($include_files as $file) {
-                self::loadConfig($file);
+                static::loadConfigRecursive($file, $recursive_count);
             }
         }
-        
     }
     
     public static function getConfig(string $key): array|string|float|int|bool|null
@@ -85,9 +91,9 @@ class Config
     : array|string|float|int|bool|null
     {
         try {
-            $value = self::getConfig($key);
+            $value = static::getConfig($key);
         } catch (\Exception) {
-            self::setConfig($key, $default_value);
+            static::setConfig($key, $default_value);
             return $default_value;
         }
         return $value;
@@ -95,7 +101,7 @@ class Config
     
     public static function listConfigFile(string $dir): array
     {
-        $result = glob(Common::getAbsolutePath($dir) . "/" . self::CONFIG_FILE_FILTER);
+        $result = glob(Common::getAbsolutePath($dir) . "/" . static::CONFIG_FILE_FILTER);
         if ($result === false)
             return [];
         return $result;

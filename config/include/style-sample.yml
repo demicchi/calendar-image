@@ -1,5 +1,5 @@
 style:
-  jp-600x488-1:
+  sample-style-1:
     background_image: ./image/background-jp-600x488-1.png
     # first_wday
     # first day of week
@@ -410,3 +410,20 @@ style:
           - {position: [124, 135], size: [26, 20]}
           - {position: [150, 135], size: [26, 20]}
           - {position: [176, 135], size: [26, 20]}
+    # images
+    # render images
+    # (structure)
+    #   name-of-the-label:
+    #     url: the url of the image to render. This value is passed to file_get_contents()
+    #     mandatory: Set true to abort the program if the image is invalid. Set false to continue.
+    #     box:
+    #       position: the position in [X, Y] of the area to render the image
+    #       size: the size in [W, H] of the area to render the image
+    images:
+      sample_image_1:
+        url: http://localhost/image/image_sample_225x250.png
+        mandatory: true
+        box:
+          position: [0, 0]
+          size: [225, 250]
+
