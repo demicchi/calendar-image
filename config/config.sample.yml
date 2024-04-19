@@ -5,10 +5,18 @@ logging:
   file: ./log/log.txt
 timezone: Asia/Tokyo
 default_style: sample-style-1
+default_refresh_timetable: forecast
 
 include_dir: ./config/include
 
-
+# dither_palette
+# define palettes to use when dithering the image
+# (structure)
+#   name-of-the-palette:
+#     palette:
+#       number = [R, G, B]
+#       ...
+#     amount = 0..1 : How heavily the dithering effect is to be applied.
 dither_palette:
   7color:
     palette:
@@ -21,6 +29,20 @@ dither_palette:
       6: [255, 170,   0] # orange
     amount: 0.75
 
+# refresh_time
+# define timetables to be used when calculating the remaining seconds to the next nearest time in the timetable
+# when `mode=timer` is set to this program
+# (structure)
+#   name-of-the-timetable:
+#     - time
+#     - ...
+refresh_timetable:
+  forecast:
+    - '0:00'
+    - '5:00'
+    - '11:00'
+    - '17:00'
+    - '20:00'
 
 holiday:
   japan-1:

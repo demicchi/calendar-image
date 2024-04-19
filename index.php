@@ -46,10 +46,34 @@ if (isset($_GET["mode"])) {
     $mode = strtolower(Common::sanitizeUserInput($_GET["mode"]));
     switch ($mode) {
         case "timer":
-            // echo seconds to 00:00 next day
-            $timestamp_now = $now->getTimestamp();
-            $timestamp_tomorrow = $now->modify("tomorrow")->getTimestamp();
-            echo $timestamp_tomorrow - $timestamp_now;
+            $refresh_timetable_name = $_GET["timetable"]
+                ?? Config::getConfigOrSetIfUndefined("default_refresh_timetable");
+            if (empty($refresh_timetable_name)) {
+                $refresh_timetable = ['00:00'];
+            } else {
+                $refresh_timetable = Config::getConfigOrSetIfUndefined(
+                    "refresh_timetable/{$refresh_timetable_name}",
+                    ['00:00']
+                );
+            }
+            if (!is_array($refresh_timetable))
+                $refresh_timetable = [$refresh_timetable];
+            
+            Logging::debug("refresh_timetable: " . print_r($refresh_timetable, true));
+            
+            $datetime_list_today = Calendar::getDateTimeImmutableFromStringForEach($now, $refresh_timetable);
+            $datetime_list_tomorrow = Calendar::getNextDayForEach($datetime_list_today);
+            $datetime_list = array_merge($datetime_list_today, $datetime_list_tomorrow);
+            
+            foreach ($datetime_list as $key => $datetime) {
+                Logging::debug("search_list[" . $key . "]: " . $datetime->format(\DateTimeInterface::ATOM));
+            }
+            
+            $next_datetime_index = Calendar::getNextDateTimeIndex($now, $datetime_list);
+            if (is_null($next_datetime_index))
+                exit("error");
+            Logging::debug("next datetime: " . $datetime_list[$next_datetime_index]->format(\DateTimeInterface::ATOM));
+            echo $datetime_list[$next_datetime_index]->getTimestamp() - $now->getTimestamp();
             exit();
             break;
         case "7color4bit":

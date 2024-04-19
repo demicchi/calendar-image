@@ -158,4 +158,43 @@ class Calendar
         }
     }
     
+    /**
+     * @param \DateTimeInterface[] $datetime_list
+     */
+    public static function getNextDateTimeIndex(\DateTimeInterface $needle, array $datetime_list)
+    : ?int
+    {
+        $reference_timestamp = $needle->getTimestamp();
+        asort($datetime_list);
+        foreach ($datetime_list as $key => $datetime) {
+            $diff = $datetime->getTimestamp() - $reference_timestamp;
+            if ($diff > 0)
+                return $key;
+        }
+        return null;
+    }
+    
+    /**
+     * @param string[] $datetime_list
+     * @return \DateTimeImmutable[]
+     */
+    public static function getDateTimeImmutableFromStringForEach(\DateTimeInterface $now, array $datetime_list): array
+    {
+        return array_map(
+            fn($value): \DateTimeImmutable => \DateTimeImmutable::createFromInterface($now)->modify($value),
+            $datetime_list
+        );
+    }
+    
+    /**
+     * @param \DateTimeInterface[] $datetime_list
+     * @return \DateTimeImmutable[]
+     */
+    public static function getNextDayForEach(array $datetime_list): array
+    {
+        return array_map(
+            fn($value): \DateTimeImmutable => \DateTimeImmutable::createFromInterface($value)->modify("+1 day"),
+            $datetime_list
+        );
+    }
 }
