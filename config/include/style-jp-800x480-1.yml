@@ -1,0 +1,401 @@
+style:
+  jp-800x480-1:
+    background_image: ./image/background-jp-800x480-1.png
+    first_wday: 0
+    holiday: japan-1
+    labels:
+      this_year_in_western:
+        diff: this year
+        locale: null
+        format: 'Y'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 16
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [213, 3]
+          size: [60, 25]
+      this_year_in_local:
+        diff: this year
+        locale: ja_JP@calendar=japanese
+        format: 'Gy'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 16
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [273, 3]
+          size: [80, 25]
+      this_month_in_numerical:
+        diff: first day of this month
+        locale: null
+        format: 'n'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 80
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [213, 28]
+          size: [140, 100]
+      this_month_in_textual:
+        diff: first day of this month
+        locale: null
+        format: 'F'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 16
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [213, 128]
+          size: [140, 25]
+      next_month_in_numerical:
+        diff: first day of next month
+        locale: null
+        format: 'n'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 20
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [401, 3]
+          size: [40, 30]
+      next_month_in_textual:
+        diff: first day of next month
+        locale: null
+        format: 'F'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [446, 8]
+          size: [100, 20]
+      previous_month_in_numerical:
+        diff: first day of previous month
+        locale: null
+        format: 'n'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 20
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [23, 3]
+          size: [40, 30]
+      previous_month_in_textual:
+        diff: first day of previous month
+        locale: null
+        format: 'F'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          color: [0, 0, 0, 0]
+          holiday_color: false
+        box:
+          position: [68, 8]
+          size: [100, 20]
+      today_day_of_month:
+        diff: this day
+        locale: null
+        format: 'j'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 180
+          color: [0, 0, 0, 0]
+          wday_colors:
+            sunday: [255, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        box:
+          position: [572, 3]
+          size: [225, 180]
+      today_day_of_week:
+        diff: this day
+        locale: ja_JP@calendar=japanese
+        format: 'EEEE'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 32
+          color: [0, 0, 0, 0]
+          wday_colors:
+            sunday: [255, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        box:
+          position: [572, 183]
+          size: [225, 45]
+    calendars:
+      this_month_days:
+        diff: this day
+        locale: null
+        format: 'j'
+        font:
+          file: ./font/ZenMaruGothic-Black.ttf
+          size: 30
+          color: [0, 0, 0, 0]
+          wday_colors:
+            sunday: [255, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        text_boxes:
+          - {position: [  3, 178], size: [80, 35]}
+          - {position: [ 83, 178], size: [80, 35]}
+          - {position: [163, 178], size: [80, 35]}
+          - {position: [243, 178], size: [80, 35]}
+          - {position: [323, 178], size: [80, 35]}
+          - {position: [403, 178], size: [80, 35]}
+          - {position: [483, 178], size: [80, 35]}
+          - {position: [  3, 228], size: [80, 35]}
+          - {position: [ 83, 228], size: [80, 35]}
+          - {position: [163, 228], size: [80, 35]}
+          - {position: [243, 228], size: [80, 35]}
+          - {position: [323, 228], size: [80, 35]}
+          - {position: [403, 228], size: [80, 35]}
+          - {position: [483, 228], size: [80, 35]}
+          - {position: [  3, 278], size: [80, 35]}
+          - {position: [ 83, 278], size: [80, 35]}
+          - {position: [163, 278], size: [80, 35]}
+          - {position: [243, 278], size: [80, 35]}
+          - {position: [323, 278], size: [80, 35]}
+          - {position: [403, 278], size: [80, 35]}
+          - {position: [483, 278], size: [80, 35]}
+          - {position: [  3, 328], size: [80, 35]}
+          - {position: [ 83, 328], size: [80, 35]}
+          - {position: [163, 328], size: [80, 35]}
+          - {position: [243, 328], size: [80, 35]}
+          - {position: [323, 328], size: [80, 35]}
+          - {position: [403, 328], size: [80, 35]}
+          - {position: [483, 328], size: [80, 35]}
+          - {position: [  3, 378], size: [80, 35]}
+          - {position: [ 83, 378], size: [80, 35]}
+          - {position: [163, 378], size: [80, 35]}
+          - {position: [243, 378], size: [80, 35]}
+          - {position: [323, 378], size: [80, 35]}
+          - {position: [403, 378], size: [80, 35]}
+          - {position: [483, 378], size: [80, 35]}
+          - {position: [  3, 428], size: [80, 35]}
+          - {position: [ 83, 428], size: [80, 35]}
+          - {position: [163, 428], size: [80, 35]}
+          - {position: [243, 428], size: [80, 35]}
+          - {position: [323, 428], size: [80, 35]}
+          - {position: [403, 428], size: [80, 35]}
+          - {position: [483, 428], size: [80, 35]}
+        illumination_boxes:
+          - {position: [  3, 178], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 83, 178], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [163, 178], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [243, 178], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [323, 178], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [403, 178], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [483, 178], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [  3, 228], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 83, 228], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [163, 228], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [243, 228], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [323, 228], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [403, 228], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [483, 228], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [  3, 278], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 83, 278], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [163, 278], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [243, 278], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [323, 278], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [403, 278], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [483, 278], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [  3, 328], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 83, 328], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [163, 328], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [243, 328], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [323, 328], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [403, 328], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [483, 328], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [  3, 378], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 83, 378], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [163, 378], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [243, 378], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [323, 378], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [403, 378], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [483, 378], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [  3, 428], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [ 83, 428], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [163, 428], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [243, 428], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [323, 428], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [403, 428], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+          - {position: [483, 428], size: [80, 50], shape: rectangle, background_color: [255, 255, 127, 0], line_color: [0, 0, 0, 0]}
+      this_month_holidays:
+        diff: this day
+        locale: null
+        format: 'holiday_name'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 9
+          color: [] # holiday colors are defined in `holiday` section.
+          colors: {} # holiday colors are defined in `holiday` section.
+          holiday_color: true
+        text_boxes:
+          - {position: [  3, 213], size: [80, 15]}
+          - {position: [ 83, 213], size: [80, 15]}
+          - {position: [163, 213], size: [80, 15]}
+          - {position: [243, 213], size: [80, 15]}
+          - {position: [323, 213], size: [80, 15]}
+          - {position: [403, 213], size: [80, 15]}
+          - {position: [483, 213], size: [80, 15]}
+          - {position: [  3, 263], size: [80, 15]}
+          - {position: [ 83, 263], size: [80, 15]}
+          - {position: [163, 263], size: [80, 15]}
+          - {position: [243, 263], size: [80, 15]}
+          - {position: [323, 263], size: [80, 15]}
+          - {position: [403, 263], size: [80, 15]}
+          - {position: [483, 263], size: [80, 15]}
+          - {position: [  3, 313], size: [80, 15]}
+          - {position: [ 83, 313], size: [80, 15]}
+          - {position: [163, 313], size: [80, 15]}
+          - {position: [243, 313], size: [80, 15]}
+          - {position: [323, 313], size: [80, 15]}
+          - {position: [403, 313], size: [80, 15]}
+          - {position: [483, 313], size: [80, 15]}
+          - {position: [  3, 363], size: [80, 15]}
+          - {position: [ 83, 363], size: [80, 15]}
+          - {position: [163, 363], size: [80, 15]}
+          - {position: [243, 363], size: [80, 15]}
+          - {position: [323, 363], size: [80, 15]}
+          - {position: [403, 363], size: [80, 15]}
+          - {position: [483, 363], size: [80, 15]}
+          - {position: [  3, 413], size: [80, 15]}
+          - {position: [ 83, 413], size: [80, 15]}
+          - {position: [163, 413], size: [80, 15]}
+          - {position: [243, 413], size: [80, 15]}
+          - {position: [323, 413], size: [80, 15]}
+          - {position: [403, 413], size: [80, 15]}
+          - {position: [483, 413], size: [80, 15]}
+          - {position: [  3, 463], size: [80, 15]}
+          - {position: [ 83, 463], size: [80, 15]}
+          - {position: [163, 463], size: [80, 15]}
+          - {position: [243, 463], size: [80, 15]}
+          - {position: [323, 463], size: [80, 15]}
+          - {position: [403, 463], size: [80, 15]}
+          - {position: [483, 463], size: [80, 15]}
+      next_month_days:
+        diff: first day of next month
+        locale: null
+        format: 'j'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          color: [0, 0, 0, 0]
+          wday_colors:
+            sunday: [255, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        text_boxes:
+          - {position: [381,  33], size: [26, 20]}
+          - {position: [407,  33], size: [26, 20]}
+          - {position: [433,  33], size: [26, 20]}
+          - {position: [459,  33], size: [26, 20]}
+          - {position: [485,  33], size: [26, 20]}
+          - {position: [511,  33], size: [26, 20]}
+          - {position: [537,  33], size: [26, 20]}
+          - {position: [381,  53], size: [26, 20]}
+          - {position: [407,  53], size: [26, 20]}
+          - {position: [433,  53], size: [26, 20]}
+          - {position: [459,  53], size: [26, 20]}
+          - {position: [485,  53], size: [26, 20]}
+          - {position: [511,  53], size: [26, 20]}
+          - {position: [537,  53], size: [26, 20]}
+          - {position: [381,  73], size: [26, 20]}
+          - {position: [407,  73], size: [26, 20]}
+          - {position: [433,  73], size: [26, 20]}
+          - {position: [459,  73], size: [26, 20]}
+          - {position: [485,  73], size: [26, 20]}
+          - {position: [511,  73], size: [26, 20]}
+          - {position: [537,  73], size: [26, 20]}
+          - {position: [381,  93], size: [26, 20]}
+          - {position: [407,  93], size: [26, 20]}
+          - {position: [433,  93], size: [26, 20]}
+          - {position: [459,  93], size: [26, 20]}
+          - {position: [485,  93], size: [26, 20]}
+          - {position: [511,  93], size: [26, 20]}
+          - {position: [537,  93], size: [26, 20]}
+          - {position: [381, 113], size: [26, 20]}
+          - {position: [407, 113], size: [26, 20]}
+          - {position: [433, 113], size: [26, 20]}
+          - {position: [459, 113], size: [26, 20]}
+          - {position: [485, 113], size: [26, 20]}
+          - {position: [511, 113], size: [26, 20]}
+          - {position: [537, 113], size: [26, 20]}
+          - {position: [381, 133], size: [26, 20]}
+          - {position: [407, 133], size: [26, 20]}
+          - {position: [433, 133], size: [26, 20]}
+          - {position: [459, 133], size: [26, 20]}
+          - {position: [485, 133], size: [26, 20]}
+          - {position: [511, 133], size: [26, 20]}
+          - {position: [537, 133], size: [26, 20]}
+      previous_month_days:
+        diff: first day of previous month
+        locale: null
+        format: 'j'
+        font:
+          file: ./font/ZenMaruGothic-Medium.ttf
+          size: 14
+          color: [0, 0, 0, 0]
+          wday_colors:
+            sunday: [255, 0, 0, 0]
+            saturday: [0, 0, 255, 0]
+          holiday_color: true
+        text_boxes:
+          - {position: [  3,  33], size: [26, 20]}
+          - {position: [ 29,  33], size: [26, 20]}
+          - {position: [ 55,  33], size: [26, 20]}
+          - {position: [ 81,  33], size: [26, 20]}
+          - {position: [107,  33], size: [26, 20]}
+          - {position: [133,  33], size: [26, 20]}
+          - {position: [159,  33], size: [26, 20]}
+          - {position: [  3,  53], size: [26, 20]}
+          - {position: [ 29,  53], size: [26, 20]}
+          - {position: [ 55,  53], size: [26, 20]}
+          - {position: [ 81,  53], size: [26, 20]}
+          - {position: [107,  53], size: [26, 20]}
+          - {position: [133,  53], size: [26, 20]}
+          - {position: [159,  53], size: [26, 20]}
+          - {position: [  3,  73], size: [26, 20]}
+          - {position: [ 29,  73], size: [26, 20]}
+          - {position: [ 55,  73], size: [26, 20]}
+          - {position: [ 81,  73], size: [26, 20]}
+          - {position: [107,  73], size: [26, 20]}
+          - {position: [133,  73], size: [26, 20]}
+          - {position: [159,  73], size: [26, 20]}
+          - {position: [  3,  93], size: [26, 20]}
+          - {position: [ 29,  93], size: [26, 20]}
+          - {position: [ 55,  93], size: [26, 20]}
+          - {position: [ 81,  93], size: [26, 20]}
+          - {position: [107,  93], size: [26, 20]}
+          - {position: [133,  93], size: [26, 20]}
+          - {position: [159,  93], size: [26, 20]}
+          - {position: [  3, 113], size: [26, 20]}
+          - {position: [ 29, 113], size: [26, 20]}
+          - {position: [ 55, 113], size: [26, 20]}
+          - {position: [ 81, 113], size: [26, 20]}
+          - {position: [107, 113], size: [26, 20]}
+          - {position: [133, 113], size: [26, 20]}
+          - {position: [159, 113], size: [26, 20]}
+          - {position: [  3, 133], size: [26, 20]}
+          - {position: [ 29, 133], size: [26, 20]}
+          - {position: [ 55, 133], size: [26, 20]}
+          - {position: [ 81, 133], size: [26, 20]}
+          - {position: [107, 133], size: [26, 20]}
+          - {position: [133, 133], size: [26, 20]}
+          - {position: [159, 133], size: [26, 20]}
+    images:
+      forecast:
+        url: http://localhost/weather/index.php?style=jma-225x250-1
+        mandatory: true
+        box:
+          position: [572, 228]
+          size: [225, 250]
